@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CommunityConnect | Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="auth-page">
+    <header class="topbar auth-topbar">
+      <div class="container nav compact-nav">
+        <a href="index.html" class="brand">
+          <div class="brand-mark">C</div>
+          <div>
+            <strong>CommunityConnect</strong>
+            <span>Neighborhood network</span>
+          </div>
+        </a>
+        <a href="index.html" class="btn btn-ghost">Back home</a>
+      </div>
+    </header>
+
+    <main class="auth-shell">
+      <section class="auth-hero">
+        <div class="auth-content">
+          <span class="badge badge-soft">Join the movement</span>
+          <h1>Stay connected to what matters in your neighborhood.</h1>
+          <p>
+            Track local issues, sign up for updates, and work alongside residents and city teams.
+          </p>
+
+          <div class="auth-points">
+            <div>
+              <strong>Local</strong>
+              <span>Issue updates</span>
+            </div>
+            <div>
+              <strong>Clear</strong>
+              <span>Progress tracking</span>
+            </div>
+            <div>
+              <strong>Connected</strong>
+              <span>Community care</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="auth-card-wrap">
+        <div class="auth-card">
+          <div class="auth-tabs" role="tablist" aria-label="Authentication tabs">
+            <button class="tab-btn active" type="button" data-tab="login" aria-selected="true">
+              Log in
+            </button>
+            <button class="tab-btn" type="button" data-tab="signup" aria-selected="false">
+              Sign up
+            </button>
+          </div>
+
+          <form class="auth-form active" data-form="login">
+            <div class="input-group">
+              <label for="login-email">Email address</label>
+              <input id="login-email" type="email" placeholder="you@example.com" />
+            </div>
+            <div class="input-group">
+              <label for="login-password">Password</label>
+              <input id="login-password" type="password" placeholder="••••••••" />
+            </div>
+            <div class="form-row">
+              <label class="checkbox-row">
+                <input type="checkbox" />
+                <span>Remember me</span>
+              </label>
+              <a href="#">Forgot password?</a>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Log in</button>
+          </form>
+
+          <form class="auth-form" data-form="signup">
+            <div class="two-col-inputs">
+              <div class="input-group">
+                <label for="signup-first">First name</label>
+                <input id="signup-first" type="text" placeholder="Alex" />
+              </div>
+              <div class="input-group">
+                <label for="signup-last">Last name</label>
+                <input id="signup-last" type="text" placeholder="Nguyen" />
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="signup-email">Email address</label>
+              <input id="signup-email" type="email" placeholder="you@example.com" />
+            </div>
+            <div class="input-group">
+              <label for="signup-password">Password</label>
+              <input id="signup-password" type="password" placeholder="Create a password" />
+            </div>
+            <div class="input-group">
+              <label for="signup-area">Neighborhood</label>
+              <select id="signup-area">
+                <option>Downtown</option>
+                <option>Northside</option>
+                <option>Riverside</option>
+                <option>Oak Park</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Create account</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

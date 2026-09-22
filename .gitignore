@@ -1,0 +1,13 @@
+node_modules/
+vendor/
+.env
+.env.*
+.DS_Store
+Thumbs.db
+*.log
+__.pycache__/
+.phpunit.result.cache
+sample_app/vendor/
+sample_app/node_modules/
+sample_app/storage/logs/
+sample_app/bootstrap/cache/*.php
