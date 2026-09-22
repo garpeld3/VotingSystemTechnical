@@ -82,12 +82,25 @@
         <div>
             <h2>Election Status</h2>
             <p id="statusText">Checking election status...</p>
+            <p id="countdownText" class="countdown-text">Waiting for election schedule...</p>
         </div>
 
         <div id="statusBadge" class="status-badge">
             NOT STARTED
         </div>
 
+    </section>
+
+    <section id="resultsSection" class="card" style="display:none; margin-top: 24px;">
+        <div class="section-title" style="margin-top: 0;">
+            <div>
+                <h2>Election Results</h2>
+                <p class="small">Final tally after the election has ended.</p>
+            </div>
+        </div>
+
+        <p id="resultsSummary" class="small"></p>
+        <div id="resultsContainer" class="results-grid"></div>
     </section>
 
 
@@ -192,14 +205,21 @@ function getElectionData() {
             parties: [],
             status: "draft",
             startTime: "",
-            endTime: ""
+            endTime: "",
+            totalVotes: 0,
+            voteResults: []
         };
 
     }
 
     try {
 
-        return JSON.parse(savedData);
+        const electionData = JSON.parse(savedData);
+
+        electionData.totalVotes = Number(electionData.totalVotes || 0);
+        electionData.voteResults = Array.isArray(electionData.voteResults) ? electionData.voteResults : [];
+
+        return electionData;
 
     } catch (error) {
 
@@ -207,11 +227,17 @@ function getElectionData() {
             parties: [],
             status: "draft",
             startTime: "",
-            endTime: ""
+            endTime: "",
+            totalVotes: 0,
+            voteResults: []
         };
 
     }
 
+}
+
+function saveElectionData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 
@@ -357,16 +383,118 @@ function updateSubmitState() {
    UPDATE ELECTION STATUS
 ========================= */
 
+function getCountdownText(endTime) {
+
+    if (!endTime) {
+        return "Election schedule is pending.";
+    }
+
+    const now = new Date();
+    const endDate = new Date(endTime);
+    const remaining = endDate - now;
+
+    if (remaining <= 0) {
+        return "Election has ended.";
+    }
+
+    const totalSeconds = Math.floor(remaining / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${days}d ${hours}h ${minutes}m ${seconds}s remaining`;
+
+}
+
+function getCandidateResults() {
+
+    const data = getElectionData();
+    const resultMap = new Map();
+
+    (data.voteResults || []).forEach(item => {
+        const key = `${item.partyIndex}_${item.candidateIndex}`;
+        resultMap.set(key, Number(item.votes || 0));
+    });
+
+    const results = [];
+
+    data.parties.forEach((party, partyIndex) => {
+        party.candidates.forEach((candidate, candidateIndex) => {
+            const key = `${partyIndex}_${candidateIndex}`;
+            const votes = resultMap.get(key) || 0;
+
+            results.push({
+                partyName: party.name,
+                candidateName: candidate.name,
+                position: candidate.position,
+                votes: votes
+            });
+        });
+    });
+
+    return results.sort((a, b) => b.votes - a.votes || a.candidateName.localeCompare(b.candidateName));
+
+}
+
+function renderVoteResults() {
+
+    const results = getCandidateResults();
+    const resultsContainer = document.getElementById("resultsContainer");
+    const resultsSummary = document.getElementById("resultsSummary");
+    const resultsSection = document.getElementById("resultsSection");
+
+    if (!resultsContainer || !resultsSummary || !resultsSection) {
+        return;
+    }
+
+    const highestVoteTotal = results.length > 0 ? Math.max(...results.map(item => item.votes)) : 0;
+
+    if (results.length === 0) {
+        resultsSummary.textContent = "No candidates are available yet.";
+        resultsContainer.innerHTML = "<p class=\"small\">No results available.</p>";
+        return;
+    }
+
+    const leader = results[0];
+    resultsSummary.textContent = highestVoteTotal > 0
+        ? `${leader.candidateName} is leading with ${leader.votes} vote${leader.votes === 1 ? "" : "s"}.`
+        : "No votes have been recorded yet.";
+
+    resultsContainer.innerHTML = results.map(item => {
+        const width = highestVoteTotal > 0 ? (item.votes / highestVoteTotal) * 100 : 0;
+        return `
+            <div class="result-item">
+                <div class="result-row">
+                    <span>${escapeHTML(item.candidateName)} · ${escapeHTML(item.position)}</span>
+                    <strong>${item.votes}</strong>
+                </div>
+                <div class="result-bar">
+                    <span style="width: ${width}%"></span>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+}
+
 function updateElectionStatus() {
 
     const data = getElectionData();
 
+    if (data.status === "active" && data.endTime && new Date(data.endTime) <= new Date()) {
+        data.status = "ended";
+        saveElectionData(data);
+    }
+
     const statusText = document.getElementById("statusText");
     const statusBadge = document.getElementById("statusBadge");
+    const countdownText = document.getElementById("countdownText");
 
     const votingArea = document.getElementById("votingArea");
     const closedMessage = document.getElementById("closedMessage");
     const closedText = document.getElementById("closedText");
+    const resultsSection = document.getElementById("resultsSection");
 
 
     if (data.status === "active") {
@@ -378,6 +506,9 @@ function updateElectionStatus() {
 
         votingArea.style.display = "block";
         closedMessage.style.display = "none";
+        resultsSection.style.display = "none";
+
+        countdownText.textContent = getCountdownText(data.endTime);
 
         renderParties();
         restoreVoterDraft();
@@ -393,9 +524,14 @@ function updateElectionStatus() {
 
         votingArea.style.display = "none";
         closedMessage.style.display = "block";
+        resultsSection.style.display = "block";
+
+        countdownText.textContent = "Voting is closed.";
 
         closedText.textContent =
-            "The election has ended. Voting is no longer available.";
+            "The election has ended. Results are now available below.";
+
+        renderVoteResults();
 
     }
 
@@ -408,6 +544,9 @@ function updateElectionStatus() {
 
         votingArea.style.display = "none";
         closedMessage.style.display = "block";
+        resultsSection.style.display = "none";
+
+        countdownText.textContent = "Waiting for election schedule...";
 
         closedText.textContent =
             "The election has not started yet. Please wait for the administrator to open voting.";
@@ -561,6 +700,12 @@ function submitVote() {
 
     const data = getElectionData();
 
+    if (data.status !== "active") {
+        alert("Voting is currently closed.");
+        updateElectionStatus();
+        return;
+    }
+
     const voterId =
         document.getElementById("voterId").value.trim();
 
@@ -602,6 +747,26 @@ function submitVote() {
 
     }
 
+    data.totalVotes = Number(data.totalVotes || 0) + 1;
+
+    selectedCandidates.forEach(input => {
+        const [partyIndex, candidateIndex] = String(input.value).split("_").map(Number);
+        const key = `${partyIndex}_${candidateIndex}`;
+        const existingIndex = data.voteResults.findIndex(item => `${item.partyIndex}_${item.candidateIndex}` === key);
+
+        if (existingIndex >= 0) {
+            data.voteResults[existingIndex].votes = Number(data.voteResults[existingIndex].votes || 0) + 1;
+        }
+        else {
+            data.voteResults.push({
+                partyIndex: partyIndex,
+                candidateIndex: candidateIndex,
+                votes: 1
+            });
+        }
+    });
+
+    saveElectionData(data);
 
     const submittedVote = {
         voterId: voterId,
@@ -629,6 +794,7 @@ function submitVote() {
     });
 
     updateSubmitState();
+    updateElectionStatus();
 
 }
 

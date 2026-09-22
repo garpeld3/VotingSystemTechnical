@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CommunityConnect | Reports</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="reports-page">
+    <header class="topbar">
+      <div class="container nav">
+        <a href="index.html" class="brand">
+          <div class="brand-mark">C</div>
+          <div>
+            <strong>CommunityConnect</strong>
+            <span>Neighborhood network</span>
+          </div>
+        </a>
+
+        <nav class="nav-links" aria-label="Report page navigation">
+          <a href="index.html">Home</a>
+          <a href="reports.html" class="active">Reports</a>
+          <a href="login.html">Account</a>
+        </nav>
+
+        <button type="button" class="btn btn-primary js-open-form">+ Add report</button>
+      </div>
+    </header>
+
+    <main class="reports-layout container">
+      <aside class="sidebar panel">
+        <div class="panel-header">
+          <h3>Community issues</h3>
+          <span class="pill">Live</span>
+        </div>
+
+        <div class="filters">
+          <button class="filter-btn active" type="button">All</button>
+          <button class="filter-btn" type="button">Safety</button>
+          <button class="filter-btn" type="button">Infrastructure</button>
+          <button class="filter-btn" type="button">Public services</button>
+        </div>
+
+        <div class="report-list" id="reportList">
+          <div class="detail-card" style="padding: 20px; text-align: center; color: var(--muted);">
+            No reports yet. Add the first community issue.
+          </div>
+        </div>
+      </aside>
+
+      <section class="map-panel panel">
+        <div class="panel-header map-header">
+          <div>
+            <h3>Neighborhood map</h3>
+            <p>Latest updates in your area</p>
+          </div>
+          <button type="button" class="btn btn-ghost js-open-form">Quick add</button>
+        </div>
+
+        <div class="map-surface" aria-label="Map of community issues">
+          <div class="map-region region-a"></div>
+          <div class="map-region region-b"></div>
+          <div class="map-region region-c"></div>
+          <button class="marker marker-one active" type="button" data-id="1" aria-label="Report 1"></button>
+          <button class="marker marker-two" type="button" data-id="2" aria-label="Report 2"></button>
+          <button class="marker marker-three" type="button" data-id="3" aria-label="Report 3"></button>
+        </div>
+      </section>
+
+      <aside class="detail-panel panel">
+        <div class="panel-header">
+          <h3>Report details</h3>
+          <span class="pill subtle">Open</span>
+        </div>
+
+        <div class="detail-content" id="detailContent">
+          <div class="detail-card" style="padding: 20px; text-align: center; color: var(--muted);">
+            Select a report to view details.
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <div class="modal" id="reportModal" aria-hidden="true">
+      <div class="modal-backdrop js-close-form"></div>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+        <div class="modal-header">
+          <div>
+            <span class="eyebrow">New report</span>
+            <h3 id="reportTitle">Add a community issue</h3>
+          </div>
+          <button class="icon-btn js-close-form" type="button" aria-label="Close form">×</button>
+        </div>
+
+        <form class="report-form">
+          <div class="input-group">
+            <label for="report-type">Issue type</label>
+            <select id="report-type">
+              <option>Pothole</option>
+              <option>Streetlight</option>
+              <option>Graffiti</option>
+              <option>Flooding</option>
+              <option>Trash</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="report-location">Location</label>
+            <input id="report-location" type="text" placeholder="Enter a street or landmark" />
+          </div>
+
+          <div class="input-group">
+            <label for="report-desc">Description</label>
+            <textarea id="report-desc" rows="4" placeholder="Briefly describe what is happening..."></textarea>
+          </div>
+
+          <div class="category-row">
+            <span>Priority</span>
+            <button class="priority-btn active" type="button">Low</button>
+            <button class="priority-btn" type="button">Medium</button>
+            <button class="priority-btn" type="button">High</button>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full">Submit report</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
