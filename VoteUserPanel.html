@@ -11,6 +11,25 @@
 
 <body>
 
+<script>
+    (function () {
+        if (sessionStorage.getItem("llccAccessGranted") !== "true") {
+            document.body.innerHTML = `
+                <main class="container" style="display:flex; align-items:center; justify-content:center; min-height: 100vh;">
+                    <section class="card" style="max-width: 620px; width: 100%; text-align: center; padding: 40px 28px;">
+                        <h1 style="font-size: 2.2rem; margin-bottom: 16px; color: var(--royal-blue-dark);">Access Restricted</h1>
+                        <p style="margin-bottom: 24px; color: var(--text-light); font-size: 1.05rem;">
+                            Please open this page by clicking the link from the main system page.
+                        </p>
+                        <a href="index.html" class="btn">Back to Home</a>
+                    </section>
+                </main>
+            `;
+            return;
+        }
+    })();
+</script>
+
 <header>
     <div class="brand">
         <img src="logo.svg" alt="Lapu-Lapu City College Logo">

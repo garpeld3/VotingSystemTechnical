@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLCC Election Access</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <img src="logo.svg" alt="Lapu-Lapu City College Logo">
+            <div class="brand-text">
+                <div class="brand-title">Lapu-Lapu City College</div>
+                <div class="brand-subtitle">Election Voting System</div>
+            </div>
+        </div>
+
+        <nav>
+            <a href="index.html">Home</a>
+        </nav>
+    </header>
+
+    <main class="container" style="display:flex; align-items:center; justify-content:center; min-height: calc(100vh - 82px);">
+        <section class="card" style="max-width: 700px; width: 100%; text-align: center; padding: 48px 30px;">
+            <h1 style="font-size: 2.4rem; margin-bottom: 20px; color: var(--royal-blue-dark);">Election Access</h1>
+            <p style="font-size: 1.08rem; margin-bottom: 28px; color: var(--text-light);">
+                Choose the page you want to open. The system will only be shown when you click one of the links below.
+            </p>
+
+            <div class="actions" style="justify-content: center; flex-wrap: wrap; gap: 16px;">
+                <a href="VoteUserPanel.html" class="btn" onclick="grantAccess('voter')">Open Voter Page</a>
+                <a href="VoteAdminPanel.html" class="btn secondary" onclick="grantAccess('admin')">Open Admin Page</a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function grantAccess(page) {
+            sessionStorage.setItem('llccAccessGranted', 'true');
+            sessionStorage.setItem('llccAccessPage', page || 'home');
+        }
+    </script>
+</body>
+</html>
