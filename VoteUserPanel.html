@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LLCC Election Voting System</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="brand">
+        <img src="logo.svg" alt="Lapu-Lapu City College Logo">
+
+        <div class="brand-text">
+            <div class="brand-title">Lapu-Lapu City College</div>
+            <div class="brand-subtitle">Election Voting System</div>
+        </div>
+    </div>
+
+    <nav>
+        <a href="VoteUserPanel.html">Vote</a>
+    </nav>
+</header>
+
+
+<main class="container">
+
+    <section id="thankYouScreen" class="card empty" style="display:none; min-height: 420px; justify-content: center; text-align: center;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 18px; color: var(--royal-blue-dark);">Thank You for Voting!</h1>
+        <p style="font-size: 1.1rem; margin-bottom: 20px; max-width: 620px; margin-inline: auto;">
+            Your vote has been successfully submitted. Your ballot is now locked in.
+        </p>
+
+        <div class="actions" style="justify-content: center; flex-wrap: wrap;">
+            <button type="button" class="btn secondary" onclick="resetVoteState()">
+                Vote Again
+            </button>
+
+            <button type="button" class="btn" onclick="leavePage()">
+                Leave
+            </button>
+        </div>
+    </section>
+
+
+    <!-- HERO -->
+    <section id="heroSection" class="hero">
+        <h1>Cast Your Vote</h1>
+        <p>
+            Welcome to the Lapu-Lapu City College Election Voting System.
+            Select your preferred candidates and submit your vote.
+        </p>
+    </section>
+
+
+    <!-- ELECTION STATUS -->
+    <section class="card status-card">
+
+        <div>
+            <h2>Election Status</h2>
+            <p id="statusText">Checking election status...</p>
+        </div>
+
+        <div id="statusBadge" class="status-badge">
+            NOT STARTED
+        </div>
+
+    </section>
+
+
+    <!-- VOTING AREA -->
+    <section id="votingArea" style="display:none;">
+
+        <!-- VOTER INFORMATION -->
+        <section class="card voter-card">
+
+            <h2>Voter Information</h2>
+
+            <label for="voterId">Voter ID</label>
+
+            <input
+                type="text"
+                id="voterId"
+                placeholder="Enter your voter ID"
+            >
+
+        </section>
+
+
+        <!-- PARTY LISTS -->
+        <div class="section-title">
+            <div>
+                <h2>Party Lists & Candidates</h2>
+                <p class="small">
+                    Select one candidate for each available position.
+                </p>
+            </div>
+        </div>
+
+        <div id="partyContainer" class="grid"></div>
+
+
+        <!-- SUBMIT -->
+        <section class="card submit-card">
+
+            <h2>Submit Your Vote</h2>
+
+            <p class="small">
+                Please review your selections before submitting.
+            </p>
+
+            <p id="submissionMessage" class="small" style="display:none; color: var(--success); font-weight: 700; margin-top: 10px;">
+                Your vote has already been submitted.
+            </p>
+
+            <div class="actions">
+
+                <button
+                    type="button"
+                    class="btn"
+                    onclick="submitVote()"
+                >
+                    Submit Vote
+                </button>
+
+                <button
+                    type="button"
+                    class="btn secondary"
+                    onclick="clearVotes()"
+                >
+                    Clear Selections
+                </button>
+
+            </div>
+
+        </section>
+
+    </section>
+
+
+    <!-- NOT OPEN MESSAGE -->
+    <section id="closedMessage" class="card empty">
+
+        <h2>Voting is currently unavailable</h2>
+
+        <p id="closedText">
+            The election has not started yet.
+        </p>
+
+    </section>
+
+</main>
+
+
+<script>
+
+const STORAGE_KEY = "electionData";
+const VOTER_FORM_KEY = "voterFormState";
+const VOTER_SUBMITTED_KEY = "voterSubmitted";
+
+
+function getElectionData() {
+
+    const savedData = localStorage.getItem(STORAGE_KEY);
+
+    if (!savedData) {
+
+        return {
+            parties: [],
+            status: "draft",
+            startTime: "",
+            endTime: ""
+        };
+
+    }
+
+    try {
+
+        return JSON.parse(savedData);
+
+    } catch (error) {
+
+        return {
+            parties: [],
+            status: "draft",
+            startTime: "",
+            endTime: ""
+        };
+
+    }
+
+}
+
+
+function saveVoterDraft() {
+
+    const selections = {};
+
+    document.querySelectorAll('#partyContainer input[type="radio"]').forEach(input => {
+        if (input.checked) {
+            selections[input.name] = input.value;
+        }
+    });
+
+    localStorage.setItem(VOTER_FORM_KEY, JSON.stringify({
+        voterId: document.getElementById("voterId").value,
+        selections: selections
+    }));
+
+}
+
+
+function restoreVoterDraft() {
+
+    const savedDraft = localStorage.getItem(VOTER_FORM_KEY);
+
+    if (!savedDraft) {
+        return;
+    }
+
+    try {
+
+        const draft = JSON.parse(savedDraft);
+        document.getElementById("voterId").value = draft.voterId || "";
+
+        const radios = document.querySelectorAll('#partyContainer input[type="radio"]');
+
+        radios.forEach(input => {
+            const selectedValue = draft.selections && draft.selections[input.name];
+            input.checked = selectedValue === input.value;
+        });
+
+    }
+    catch (error) {
+        localStorage.removeItem(VOTER_FORM_KEY);
+    }
+
+}
+
+
+function leavePage() {
+    window.location.href = "about:blank";
+}
+
+
+function resetVoteState() {
+    localStorage.removeItem(VOTER_SUBMITTED_KEY);
+    localStorage.removeItem(VOTER_FORM_KEY);
+
+    const voterId = document.getElementById("voterId");
+    if (voterId) {
+        voterId.value = "";
+    }
+
+    document.querySelectorAll('#partyContainer input[type="radio"]').forEach(input => {
+        input.checked = false;
+    });
+
+    updateSubmitState();
+    updateElectionStatus();
+}
+
+
+function updateSubmitState() {
+
+    const submitted = localStorage.getItem(VOTER_SUBMITTED_KEY);
+    const submitButton = document.querySelector('.btn[onclick="submitVote()"]');
+    const submissionMessage = document.getElementById("submissionMessage");
+    const thankYouScreen = document.getElementById("thankYouScreen");
+    const heroSection = document.getElementById("heroSection");
+    const statusCard = document.querySelector(".status-card");
+    const votingArea = document.getElementById("votingArea");
+    const closedMessage = document.getElementById("closedMessage");
+
+    if (submitted) {
+        if (thankYouScreen) {
+            thankYouScreen.style.display = "block";
+        }
+
+        if (heroSection) {
+            heroSection.style.display = "none";
+        }
+
+        if (statusCard) {
+            statusCard.style.display = "none";
+        }
+
+        if (votingArea) {
+            votingArea.style.display = "none";
+        }
+
+        if (closedMessage) {
+            closedMessage.style.display = "none";
+        }
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Vote Submitted";
+            submitButton.classList.add("secondary");
+        }
+
+        if (submissionMessage) {
+            submissionMessage.style.display = "block";
+        }
+    }
+    else {
+        if (thankYouScreen) {
+            thankYouScreen.style.display = "none";
+        }
+
+        if (heroSection) {
+            heroSection.style.display = "block";
+        }
+
+        if (statusCard) {
+            statusCard.style.display = "flex";
+        }
+
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Submit Vote";
+            submitButton.classList.remove("secondary");
+        }
+
+        if (submissionMessage) {
+            submissionMessage.style.display = "none";
+        }
+    }
+
+}
+
+
+/* =========================
+   UPDATE ELECTION STATUS
+========================= */
+
+function updateElectionStatus() {
+
+    const data = getElectionData();
+
+    const statusText = document.getElementById("statusText");
+    const statusBadge = document.getElementById("statusBadge");
+
+    const votingArea = document.getElementById("votingArea");
+    const closedMessage = document.getElementById("closedMessage");
+    const closedText = document.getElementById("closedText");
+
+
+    if (data.status === "active") {
+
+        statusText.textContent = "The election is currently open.";
+
+        statusBadge.textContent = "OPEN";
+        statusBadge.className = "status-badge active";
+
+        votingArea.style.display = "block";
+        closedMessage.style.display = "none";
+
+        renderParties();
+        restoreVoterDraft();
+
+    }
+
+    else if (data.status === "ended") {
+
+        statusText.textContent = "The election has ended.";
+
+        statusBadge.textContent = "ENDED";
+        statusBadge.className = "status-badge ended";
+
+        votingArea.style.display = "none";
+        closedMessage.style.display = "block";
+
+        closedText.textContent =
+            "The election has ended. Voting is no longer available.";
+
+    }
+
+    else {
+
+        statusText.textContent = "The election has not started.";
+
+        statusBadge.textContent = "NOT STARTED";
+        statusBadge.className = "status-badge";
+
+        votingArea.style.display = "none";
+        closedMessage.style.display = "block";
+
+        closedText.textContent =
+            "The election has not started yet. Please wait for the administrator to open voting.";
+
+    }
+
+}
+
+
+/* =========================
+   DISPLAY PARTY LISTS
+========================= */
+
+function renderParties() {
+
+    const data = getElectionData();
+
+    const container = document.getElementById("partyContainer");
+
+    container.innerHTML = "";
+
+
+    if (!data.parties || data.parties.length === 0) {
+
+        container.innerHTML = `
+            <div class="card empty">
+                <h3>No party lists available</h3>
+                <p>
+                    The administrator has not added any party lists yet.
+                </p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    data.parties.forEach((party, partyIndex) => {
+
+        const partyCard = document.createElement("div");
+
+        partyCard.className = "card party";
+
+
+        let candidatesHTML = "";
+
+
+        if (party.candidates && party.candidates.length > 0) {
+
+            party.candidates.forEach((candidate, candidateIndex) => {
+
+                candidatesHTML += `
+
+                    <label class="candidate">
+
+                        <input
+                            type="radio"
+                            name="position_${escapeHTML(candidate.position)}"
+                            value="${partyIndex}_${candidateIndex}"
+                            data-party="${partyIndex}"
+                            data-candidate="${candidateIndex}"
+                        >
+
+                        <img
+                            src="${candidate.image || 'logo.jpg'}"
+                            alt="${escapeHTML(candidate.name)}"
+                        >
+
+                        <div class="candidate-info">
+
+                            <strong>
+                                ${escapeHTML(candidate.name)}
+                            </strong>
+
+                            <span>
+                                ${escapeHTML(candidate.position)}
+                            </span>
+
+                        </div>
+
+                    </label>
+
+                `;
+
+            });
+
+        }
+
+        else {
+
+            candidatesHTML = `
+                <p class="small">
+                    No candidates added to this party list.
+                </p>
+            `;
+
+        }
+
+
+        partyCard.innerHTML = `
+
+            <div class="party-head">
+
+                <img
+                    class="party-img"
+                    src="${party.image || 'logo.jpg'}"
+                    alt="${escapeHTML(party.name)}"
+                >
+
+                <div>
+
+                    <h2>
+                        ${escapeHTML(party.name)}
+                    </h2>
+
+                    <p class="small">
+                        ${escapeHTML(party.description || "No description provided.")}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="candidate-list">
+
+                ${candidatesHTML}
+
+            </div>
+
+        `;
+
+
+        container.appendChild(partyCard);
+
+    });
+
+    document.querySelectorAll('#partyContainer input[type="radio"]').forEach(input => {
+        input.addEventListener("change", saveVoterDraft);
+    });
+
+}
+
+
+/* =========================
+   SUBMIT VOTE
+========================= */
+
+function submitVote() {
+
+    const data = getElectionData();
+
+    const voterId =
+        document.getElementById("voterId").value.trim();
+
+
+    if (!voterId) {
+
+        alert("Please enter your Voter ID.");
+
+        return;
+
+    }
+
+
+    const selectedCandidates =
+        document.querySelectorAll(
+            '#partyContainer input[type="radio"]:checked'
+        );
+
+
+    if (selectedCandidates.length === 0) {
+
+        alert("Please select at least one candidate.");
+
+        return;
+
+    }
+
+
+    const confirmation =
+        confirm(
+            "Are you sure you want to submit your vote?\n\n" +
+            "Your selections cannot be changed after submission."
+        );
+
+
+    if (!confirmation) {
+
+        return;
+
+    }
+
+
+    const submittedVote = {
+        voterId: voterId,
+        selections: Array.from(selectedCandidates).map(input => ({
+            name: input.name,
+            value: input.value
+        })),
+        submittedAt: new Date().toISOString()
+    };
+
+    localStorage.setItem(VOTER_SUBMITTED_KEY, JSON.stringify(submittedVote));
+    localStorage.removeItem(VOTER_FORM_KEY);
+
+    alert(
+        "Vote submitted successfully!\n\n" +
+        "Voter ID: " + voterId
+    );
+
+    document.getElementById("voterId").value = "";
+
+    selectedCandidates.forEach(input => {
+
+        input.checked = false;
+
+    });
+
+    updateSubmitState();
+
+}
+
+
+/* =========================
+   CLEAR VOTES
+========================= */
+
+function clearVotes() {
+
+    const selected =
+        document.querySelectorAll(
+            '#partyContainer input[type="radio"]:checked'
+        );
+
+
+    selected.forEach(input => {
+
+        input.checked = false;
+
+    });
+
+    localStorage.removeItem(VOTER_FORM_KEY);
+    saveVoterDraft();
+
+}
+
+
+/* =========================
+   SECURITY / HTML ESCAPE
+========================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.getElementById("voterId").addEventListener("input", saveVoterDraft);
+updateElectionStatus();
+updateSubmitState();
+
+
+/*
+   Check every second so the voter page
+   immediately reflects admin changes.
+*/
+
+setInterval(() => {
+    updateElectionStatus();
+    updateSubmitState();
+}, 1000);
+
+</script>
+
+</body>
+</html>

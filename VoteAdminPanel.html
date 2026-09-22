@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>LLCC Election Administration</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="brand">
+
+        <img
+            src="logo.svg"
+            alt="Lapu-Lapu City College Logo"
+        >
+
+        <div class="brand-text">
+
+            <div class="brand-title">
+                Lapu-Lapu City College
+            </div>
+
+            <div class="brand-subtitle">
+                Election Administration
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <nav>
+
+        <a href="VoteUserPanel.html">
+            Voter Page
+        </a>
+
+        <a href="VoteAdminPanel.html">
+            Admin
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<main class="container">
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <h1>
+            Election Administration
+        </h1>
+
+        <p>
+            Manage the election, party lists, candidates,
+            and voting status.
+        </p>
+
+    </section>
+
+
+
+    <!-- ELECTION CONTROL -->
+
+    <section class="card">
+
+        <div class="section-title">
+
+            <div>
+
+                <h2>
+                    Election Control
+                </h2>
+
+                <p class="small">
+                    Control when voting is available.
+                </p>
+
+            </div>
+
+            <div
+                id="adminStatus"
+                class="status-badge"
+            >
+                NOT STARTED
+            </div>
+
+        </div>
+
+
+        <div class="grid form-grid">
+
+
+            <div>
+
+                <label for="startTime">
+                    Start Date & Time
+                </label>
+
+                <input
+                    type="datetime-local"
+                    id="startTime"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label for="endTime">
+                    End Date & Time
+                </label>
+
+                <input
+                    type="datetime-local"
+                    id="endTime"
+                >
+
+            </div>
+
+
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                class="btn"
+                onclick="startElection()"
+            >
+                Start Election
+            </button>
+
+
+            <button
+                class="btn danger"
+                onclick="endElection()"
+            >
+                End Election
+            </button>
+
+
+            <button
+                class="btn secondary"
+                onclick="resetElectionStatus()"
+            >
+                Reset Status
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- STATISTICS -->
+
+    <section class="stats-section">
+
+        <div class="stat">
+
+            <span>
+                Party Lists
+            </span>
+
+            <b id="partyCount">
+                0
+            </b>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                Candidates
+            </span>
+
+            <b id="candidateCount">
+                0
+            </b>
+
+        </div>
+
+
+        <div class="stat">
+
+            <span>
+                Status
+            </span>
+
+            <b id="statStatus">
+                Draft
+            </b>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ADD PARTY -->
+
+    <section class="card form-card">
+
+        <h2>
+            Add Party List
+        </h2>
+
+        <p class="small">
+            Create a party list and upload its logo.
+        </p>
+
+
+        <label for="partyName">
+            Party List Name
+        </label>
+
+        <input
+            type="text"
+            id="partyName"
+            placeholder="Example: STUDENT FIRST"
+        >
+
+
+        <label for="partyDescription">
+            Description
+        </label>
+
+        <textarea
+            id="partyDescription"
+            rows="4"
+            placeholder="Enter party list description..."
+        ></textarea>
+
+
+        <label for="partyImage">
+            Party List Image
+        </label>
+
+        <input
+            type="file"
+            id="partyImage"
+            accept="image/*"
+            onchange="previewImage(this, 'partyPreview')"
+        >
+
+
+        <div
+            id="partyPreview"
+            class="preview"
+        >
+            Image Preview
+        </div>
+
+
+        <button
+            class="btn"
+            onclick="addParty()"
+        >
+            Add Party List
+        </button>
+
+    </section>
+
+
+
+    <!-- ADD CANDIDATE -->
+
+    <section class="card form-card">
+
+        <h2>
+            Add Candidate
+        </h2>
+
+        <p class="small">
+            Add a candidate to an existing party list.
+        </p>
+
+
+        <label for="candidateParty">
+            Party List
+        </label>
+
+        <select id="candidateParty">
+
+            <option value="">
+                Select Party List
+            </option>
+
+        </select>
+
+
+        <label for="candidateName">
+            Candidate Name
+        </label>
+
+        <input
+            type="text"
+            id="candidateName"
+            placeholder="Example: Juan Dela Cruz"
+        >
+
+
+        <label for="candidatePosition">
+            Position
+        </label>
+
+        <input
+            type="text"
+            id="candidatePosition"
+            placeholder="Example: President"
+        >
+
+
+        <label for="candidateImage">
+            Candidate Image
+        </label>
+
+        <input
+            type="file"
+            id="candidateImage"
+            accept="image/*"
+            onchange="previewImage(this, 'candidatePreview')"
+        >
+
+
+        <div
+            id="candidatePreview"
+            class="preview"
+        >
+            Image Preview
+        </div>
+
+
+        <button
+            class="btn"
+            onclick="addCandidate()"
+        >
+            Add Candidate
+        </button>
+
+    </section>
+
+
+
+    <!-- CURRENT PARTY LISTS -->
+
+    <div class="section-title">
+
+        <div>
+
+            <h2>
+                Current Party Lists
+            </h2>
+
+            <p class="small">
+                Manage your party lists and candidates.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="partyListContainer"
+        class="grid"
+    ></div>
+
+
+    <section class="card danger-card">
+
+        <h3>
+            Reset Election Data
+        </h3>
+
+        <p class="small">
+            This will delete all party lists and candidates
+            stored in this browser.
+        </p>
+
+        <button
+            class="btn danger"
+            onclick="resetAllData()"
+        >
+            Reset All Election Data
+        </button>
+
+    </section>
+
+
+</main>
+
+
+
+<script>
+
+
+const STORAGE_KEY = "electionData";
+const FORM_STATE_KEY = "adminFormState";
+
+
+/* =========================
+   GET DATA
+========================= */
+
+function getElectionData() {
+
+    const savedData =
+        localStorage.getItem(STORAGE_KEY);
+
+
+    if (!savedData) {
+
+        return {
+
+            parties: [],
+
+            status: "draft",
+
+            startTime: "",
+
+            endTime: ""
+
+        };
+
+    }
+
+
+    try {
+
+        return JSON.parse(savedData);
+
+    }
+
+    catch (error) {
+
+        return {
+
+            parties: [],
+
+            status: "draft",
+
+            startTime: "",
+
+            endTime: ""
+
+        };
+
+    }
+
+}
+
+
+/* =========================
+   SAVE DATA
+========================= */
+
+function saveElectionData(data) {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(data)
+    );
+
+}
+
+
+function saveFormDraft() {
+
+    const draft = {
+        startTime: document.getElementById("startTime").value,
+        endTime: document.getElementById("endTime").value,
+        partyName: document.getElementById("partyName").value,
+        partyDescription: document.getElementById("partyDescription").value,
+        candidateParty: document.getElementById("candidateParty").value,
+        candidateName: document.getElementById("candidateName").value,
+        candidatePosition: document.getElementById("candidatePosition").value,
+        partyPreview: document.getElementById("partyPreview").innerHTML,
+        candidatePreview: document.getElementById("candidatePreview").innerHTML
+    };
+
+    localStorage.setItem(FORM_STATE_KEY, JSON.stringify(draft));
+
+}
+
+
+function restoreFormDraft() {
+
+    const savedDraft = localStorage.getItem(FORM_STATE_KEY);
+
+    if (!savedDraft) {
+        return;
+    }
+
+    try {
+
+        const draft = JSON.parse(savedDraft);
+
+        document.getElementById("startTime").value = draft.startTime || "";
+        document.getElementById("endTime").value = draft.endTime || "";
+        document.getElementById("partyName").value = draft.partyName || "";
+        document.getElementById("partyDescription").value = draft.partyDescription || "";
+        document.getElementById("candidateName").value = draft.candidateName || "";
+        document.getElementById("candidatePosition").value = draft.candidatePosition || "";
+
+        const candidateParty = document.getElementById("candidateParty");
+        if (candidateParty && draft.candidateParty) {
+            candidateParty.value = draft.candidateParty;
+        }
+
+        const partyPreview = document.getElementById("partyPreview");
+        if (partyPreview && draft.partyPreview) {
+            partyPreview.innerHTML = draft.partyPreview;
+        }
+
+        const candidatePreview = document.getElementById("candidatePreview");
+        if (candidatePreview && draft.candidatePreview) {
+            candidatePreview.innerHTML = draft.candidatePreview;
+        }
+
+    }
+    catch (error) {
+        localStorage.removeItem(FORM_STATE_KEY);
+    }
+
+}
+
+
+function bindAdminFormState() {
+
+    const fields = [
+        "startTime",
+        "endTime",
+        "partyName",
+        "partyDescription",
+        "candidateParty",
+        "candidateName",
+        "candidatePosition"
+    ];
+
+    fields.forEach(id => {
+        const field = document.getElementById(id);
+        if (field) {
+            field.addEventListener("input", saveFormDraft);
+            field.addEventListener("change", saveFormDraft);
+        }
+    });
+
+}
+
+
+/* =========================
+   START ELECTION
+========================= */
+
+function startElection() {
+
+    const startTime =
+        document.getElementById("startTime").value;
+
+    const endTime =
+        document.getElementById("endTime").value;
+
+
+    if (!startTime || !endTime) {
+
+        alert(
+            "Please enter both the start and end date/time."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        new Date(endTime) <=
+        new Date(startTime)
+    ) {
+
+        alert(
+            "The end time must be later than the start time."
+        );
+
+        return;
+
+    }
+
+
+    const data = getElectionData();
+
+
+    data.startTime = startTime;
+
+    data.endTime = endTime;
+
+    data.status = "active";
+
+
+    saveElectionData(data);
+    saveFormDraft();
+
+
+    updateAdminDisplay();
+
+
+    alert(
+        "Election started successfully."
+    );
+
+}
+
+
+/* =========================
+   END ELECTION
+========================= */
+
+function endElection() {
+
+    const confirmation =
+        confirm(
+            "Are you sure you want to end the election?"
+        );
+
+
+    if (!confirmation) {
+
+        return;
+
+    }
+
+
+    const data = getElectionData();
+
+
+    data.status = "ended";
+
+
+    saveElectionData(data);
+    saveFormDraft();
+
+
+    updateAdminDisplay();
+
+
+    alert(
+        "Election has ended."
+    );
+
+}
+
+
+/* =========================
+   RESET STATUS
+========================= */
+
+function resetElectionStatus() {
+
+    const data = getElectionData();
+
+
+    data.status = "draft";
+
+
+    saveElectionData(data);
+
+
+    updateAdminDisplay();
+
+}
+
+
+/* =========================
+   ADD PARTY
+========================= */
+
+function addParty() {
+
+    const name =
+        document.getElementById("partyName")
+        .value
+        .trim();
+
+
+    const description =
+        document.getElementById("partyDescription")
+        .value
+        .trim();
+
+
+    const imageFile =
+        document.getElementById("partyImage")
+        .files[0];
+
+
+    if (!name) {
+
+        alert(
+            "Please enter a party list name."
+        );
+
+        return;
+
+    }
+
+
+    const data = getElectionData();
+
+
+    if (imageFile) {
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload = function(event) {
+
+            data.parties.push({
+
+                name: name,
+
+                description: description,
+
+                image: event.target.result,
+
+                candidates: []
+
+            });
+
+
+            saveElectionData(data);
+            localStorage.removeItem(FORM_STATE_KEY);
+
+            clearPartyForm();
+
+            updateAdminDisplay();
+
+
+            alert(
+                "Party list added successfully."
+            );
+
+        };
+
+
+        reader.readAsDataURL(imageFile);
+
+    }
+
+    else {
+
+        data.parties.push({
+
+            name: name,
+
+            description: description,
+
+            image: "",
+
+            candidates: []
+
+        });
+
+
+        saveElectionData(data);
+        localStorage.removeItem(FORM_STATE_KEY);
+
+        clearPartyForm();
+
+        updateAdminDisplay();
+
+
+        alert(
+            "Party list added successfully."
+        );
+
+    }
+
+}
+
+
+/* =========================
+   ADD CANDIDATE
+========================= */
+
+function addCandidate() {
+
+    const partyIndex =
+        document.getElementById("candidateParty")
+        .value;
+
+
+    const name =
+        document.getElementById("candidateName")
+        .value
+        .trim();
+
+
+    const position =
+        document.getElementById("candidatePosition")
+        .value
+        .trim();
+
+
+    const imageFile =
+        document.getElementById("candidateImage")
+        .files[0];
+
+
+    if (partyIndex === "") {
+
+        alert(
+            "Please select a party list."
+        );
+
+        return;
+
+    }
+
+
+    if (!name) {
+
+        alert(
+            "Please enter the candidate name."
+        );
+
+        return;
+
+    }
+
+
+    if (!position) {
+
+        alert(
+            "Please enter the candidate position."
+        );
+
+        return;
+
+    }
+
+
+    const data = getElectionData();
+
+
+    const party =
+        data.parties[partyIndex];
+
+
+    if (!party) {
+
+        alert(
+            "Selected party list could not be found."
+        );
+
+        return;
+
+    }
+
+
+    function saveCandidate(imageData) {
+
+        party.candidates.push({
+
+            name: name,
+
+            position: position,
+
+            image: imageData || ""
+
+        });
+
+
+        saveElectionData(data);
+        localStorage.removeItem(FORM_STATE_KEY);
+
+        clearCandidateForm();
+
+        updateAdminDisplay();
+
+
+        alert(
+            "Candidate added successfully."
+        );
+
+    }
+
+
+    if (imageFile) {
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload = function(event) {
+
+            saveCandidate(
+                event.target.result
+            );
+
+        };
+
+
+        reader.readAsDataURL(imageFile);
+
+    }
+
+    else {
+
+        saveCandidate("");
+
+    }
+
+}
+
+
+/* =========================
+   DELETE PARTY
+========================= */
+
+function deleteParty(index) {
+
+    const data = getElectionData();
+
+
+    const party =
+        data.parties[index];
+
+
+    if (!party) {
+
+        return;
+
+    }
+
+
+    const confirmation =
+        confirm(
+            "Delete " +
+            party.name +
+            " and all of its candidates?"
+        );
+
+
+    if (!confirmation) {
+
+        return;
+
+    }
+
+
+    data.parties.splice(index, 1);
+
+
+    saveElectionData(data);
+    saveFormDraft();
+
+
+    updateAdminDisplay();
+
+}
+
+
+/* =========================
+   DELETE CANDIDATE
+========================= */
+
+function deleteCandidate(
+    partyIndex,
+    candidateIndex
+) {
+
+    const data = getElectionData();
+
+
+    if (
+        !data.parties[partyIndex] ||
+        !data.parties[partyIndex].candidates[candidateIndex]
+    ) {
+
+        return;
+
+    }
+
+
+    const candidate =
+        data.parties[partyIndex]
+        .candidates[candidateIndex];
+
+
+    const confirmation =
+        confirm(
+            "Delete " +
+            candidate.name +
+            "?"
+        );
+
+
+    if (!confirmation) {
+
+        return;
+
+    }
+
+
+    data.parties[partyIndex]
+        .candidates
+        .splice(candidateIndex, 1);
+
+
+    saveElectionData(data);
+    saveFormDraft();
+
+
+    updateAdminDisplay();
+
+}
+
+
+/* =========================
+   DISPLAY ADMIN DATA
+========================= */
+
+function updateAdminDisplay() {
+
+    const data = getElectionData();
+
+
+    document
+        .getElementById("startTime")
+        .value = data.startTime || "";
+
+
+    document
+        .getElementById("endTime")
+        .value = data.endTime || "";
+
+
+    const adminStatus =
+        document.getElementById("adminStatus");
+
+
+    const statStatus =
+        document.getElementById("statStatus");
+
+
+    if (data.status === "active") {
+
+        adminStatus.textContent =
+            "OPEN";
+
+        adminStatus.className =
+            "status-badge active";
+
+        statStatus.textContent =
+            "Open";
+
+    }
+
+    else if (data.status === "ended") {
+
+        adminStatus.textContent =
+            "ENDED";
+
+        adminStatus.className =
+            "status-badge ended";
+
+        statStatus.textContent =
+            "Ended";
+
+    }
+
+    else {
+
+        adminStatus.textContent =
+            "NOT STARTED";
+
+        adminStatus.className =
+            "status-badge";
+
+        statStatus.textContent =
+            "Draft";
+
+    }
+
+
+    let candidateCount = 0;
+
+
+    data.parties.forEach(party => {
+
+        candidateCount +=
+            party.candidates.length;
+
+    });
+
+
+    document
+        .getElementById("partyCount")
+        .textContent =
+        data.parties.length;
+
+
+    document
+        .getElementById("candidateCount")
+        .textContent =
+        candidateCount;
+
+
+    renderPartySelect();
+
+    renderPartyLists();
+
+    restoreFormDraft();
+
+}
+
+
+/* =========================
+   PARTY SELECT
+========================= */
+
+function renderPartySelect() {
+
+    const data = getElectionData();
+
+    const select =
+        document.getElementById("candidateParty");
+
+
+    select.innerHTML = `
+        <option value="">
+            Select Party List
+        </option>
+    `;
+
+
+    data.parties.forEach(
+        (party, index) => {
+
+            const option =
+                document.createElement("option");
+
+
+            option.value = index;
+
+            option.textContent =
+                party.name;
+
+
+            select.appendChild(option);
+
+        }
+    );
+
+}
+
+
+/* =========================
+   RENDER PARTY LISTS
+========================= */
+
+function renderPartyLists() {
+
+    const data = getElectionData();
+
+
+    const container =
+        document.getElementById(
+            "partyListContainer"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (data.parties.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="card empty">
+
+                <h3>
+                    No party lists yet
+                </h3>
+
+                <p>
+                    Add a party list above.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    data.parties.forEach(
+        (party, partyIndex) => {
+
+
+            let candidatesHTML = "";
+
+
+            if (
+                party.candidates &&
+                party.candidates.length > 0
+            ) {
+
+                party.candidates.forEach(
+                    (candidate, candidateIndex) => {
+
+                        candidatesHTML += `
+
+                            <div class="admin-candidate">
+
+                                <img
+                                    src="${candidate.image || 'logo.jpg'}"
+                                    alt="${escapeHTML(candidate.name)}"
+                                >
+
+                                <div class="candidate-info">
+
+                                    <strong>
+                                        ${escapeHTML(candidate.name)}
+                                    </strong>
+
+                                    <span>
+                                        ${escapeHTML(candidate.position)}
+                                    </span>
+
+                                </div>
+
+                                <button
+                                    class="delete-btn"
+                                    onclick="deleteCandidate(
+                                        ${partyIndex},
+                                        ${candidateIndex}
+                                    )"
+                                >
+                                    Delete
+                                </button>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+
+            }
+
+            else {
+
+                candidatesHTML = `
+
+                    <p class="small">
+                        No candidates added yet.
+                    </p>
+
+                `;
+
+            }
+
+
+            const partyCard =
+                document.createElement("div");
+
+
+            partyCard.className =
+                "card party";
+
+
+            partyCard.innerHTML = `
+
+                <div class="party-head">
+
+                    <img
+                        class="party-img"
+                        src="${party.image || 'logo.jpg'}"
+                        alt="${escapeHTML(party.name)}"
+                    >
+
+                    <div>
+
+                        <h2>
+                            ${escapeHTML(party.name)}
+                        </h2>
+
+                        <p class="small">
+                            ${escapeHTML(
+                                party.description ||
+                                "No description provided."
+                            )}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-party-actions">
+
+                    <button
+                        class="btn danger small-btn"
+                        onclick="deleteParty(${partyIndex})"
+                    >
+                        Delete Party
+                    </button>
+
+                </div>
+
+
+                <h3 class="candidate-heading">
+                    Candidates
+                </h3>
+
+
+                <div>
+                    ${candidatesHTML}
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                partyCard
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   IMAGE PREVIEW
+========================= */
+
+function previewImage(
+    input,
+    previewId
+) {
+
+    const preview =
+        document.getElementById(
+            previewId
+        );
+
+
+    const file =
+        input.files[0];
+
+
+    if (!file) {
+
+        preview.innerHTML =
+            "Image Preview";
+
+        return;
+
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(event) {
+
+            preview.innerHTML = `
+
+                <img
+                    src="${event.target.result}"
+                    alt="Preview"
+                >
+
+            `;
+
+            saveFormDraft();
+
+        };
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* =========================
+   CLEAR PARTY FORM
+========================= */
+
+function clearPartyForm() {
+
+    document.getElementById(
+        "partyName"
+    ).value = "";
+
+
+    document.getElementById(
+        "partyDescription"
+    ).value = "";
+
+
+    document.getElementById(
+        "partyImage"
+    ).value = "";
+
+
+    document.getElementById(
+        "partyPreview"
+    ).innerHTML =
+        "Image Preview";
+
+    localStorage.removeItem(FORM_STATE_KEY);
+
+}
+
+
+/* =========================
+   CLEAR CANDIDATE FORM
+========================= */
+
+function clearCandidateForm() {
+
+    document.getElementById(
+        "candidateParty"
+    ).value = "";
+
+
+    document.getElementById(
+        "candidateName"
+    ).value = "";
+
+
+    document.getElementById(
+        "candidatePosition"
+    ).value = "";
+
+
+    document.getElementById(
+        "candidateImage"
+    ).value = "";
+
+
+    document.getElementById(
+        "candidatePreview"
+    ).innerHTML =
+        "Image Preview";
+
+    localStorage.removeItem(FORM_STATE_KEY);
+
+}
+
+
+/* =========================
+   RESET EVERYTHING
+========================= */
+
+function resetAllData() {
+
+    const confirmation =
+        confirm(
+            "WARNING!\n\n" +
+            "This will delete ALL party lists, candidates, " +
+            "images, and election settings.\n\n" +
+            "Continue?"
+        );
+
+
+    if (!confirmation) {
+
+        return;
+
+    }
+
+
+    localStorage.removeItem(
+        STORAGE_KEY
+    );
+    localStorage.removeItem(FORM_STATE_KEY);
+
+
+    updateAdminDisplay();
+
+
+    alert(
+        "All election data has been reset."
+    );
+
+}
+
+
+/* =========================
+   HTML ESCAPE
+========================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================
+   INITIALIZE
+========================= */
+
+bindAdminFormState();
+restoreFormDraft();
+updateAdminDisplay();
+
+</script>
+
+
+</body>
+</html>

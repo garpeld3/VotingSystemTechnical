@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">Lapu-Lapu City College Logo</title>
+  <desc id="desc">A blue circular crest with a white shield and the letters LCC.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#1a5ad6"/>
+      <stop offset="100%" stop-color="#0c2f8a"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#eaf1ff"/>
+    </linearGradient>
+  </defs>
+  <circle cx="80" cy="80" r="72" fill="url(#bg)"/>
+  <circle cx="80" cy="80" r="62" fill="none" stroke="#dfe9ff" stroke-width="4" opacity="0.9"/>
+  <path d="M80 25 L118 37 L118 80 C118 106 100 121 80 136 C60 121 42 106 42 80 L42 37 Z" fill="url(#shield)"/>
+  <path d="M53 51 H108 V61 H87 V101 H73 V61 H53 Z" fill="#123b9d"/>
+  <path d="M95 50 H108 V101 H95 Z" fill="#123b9d"/>
+  <path d="M56 112 H102 L80 126 Z" fill="#123b9d" opacity="0.9"/>
+  <circle cx="80" cy="80" r="5" fill="#123b9d"/>
+</svg>
